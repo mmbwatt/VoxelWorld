@@ -32,6 +32,23 @@ func CreateQuad() -> void:
 	var p7: Vector3 = Vector3(-0.5,  0.5, -0.5)
 
 	#Still need code for generating quad
+	verts.append(p4)
+	verts.append(p5)
+	verts.append(p1)
+	verts.append(p0)
+	
+	normals.append(Vector3.FORWARD)
+	normals.append(Vector3.FORWARD)
+	normals.append(Vector3.FORWARD)
+	normals.append(Vector3.FORWARD)
+		
+	uvs.append(uv11)
+	uvs.append(uv01)
+	uvs.append(uv00)
+	uvs.append(uv10)
+	
+	#clockwise winding order in Godot
+	indices.append_array(PoolIntArray([3,0,1,3,1,2]))
 	
 	arr[Mesh.ARRAY_VERTEX] = verts
 	arr[Mesh.ARRAY_TEX_UV] = uvs
@@ -41,3 +58,6 @@ func CreateQuad() -> void:
 	var mesh = ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
 	
+	mi.mesh = mesh
+	
+	add_child(mi)
