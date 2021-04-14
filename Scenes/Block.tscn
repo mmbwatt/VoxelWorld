@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/block.gd" type="Script" id=1]
+[ext_resource path="res://Textures/blockatlas.jpg" type="Texture" id=2]
+
+[node name="Block" type="Spatial"]
+script = ExtResource( 1 )
+_texture_image = ExtResource( 2 )

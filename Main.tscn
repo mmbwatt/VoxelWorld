@@ -1,13 +1,15 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://test_mesh_generation.gd" type="Script" id=1]
-[ext_resource path="res://scripts/FreeMoveCamera.gd" type="Script" id=2]
+[ext_resource path="res://Scripts/chunk.gd" type="Script" id=1]
+[ext_resource path="res://scripts/free_move_camera.gd" type="Script" id=2]
+[ext_resource path="res://Textures/blockatlas.jpg" type="Texture" id=3]
 
 [node name="Main" type="Spatial"]
 
 [node name="World" type="Spatial" parent="."]
 script = ExtResource( 1 )
+cubeMaterial = ExtResource( 3 )
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.82602, 0.563641, 0, -0.563641, 0.82602, 0, 1.13926, 1.56564 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.35411 )
 script = ExtResource( 2 )

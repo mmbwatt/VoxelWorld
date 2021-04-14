@@ -8,9 +8,14 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Spatial",
+"class": "Block",
+"language": "GDScript",
+"path": "res://Scripts/block.gd"
+} ]
 _global_script_class_icons={
-
+"Block": ""
 }
 
 [application]
@@ -18,6 +23,10 @@ _global_script_class_icons={
 config/name="VoxelWorld"
 run/main_scene="res://Main.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+Enums="*res://scripts/enums.gd"
 
 [input]
 
