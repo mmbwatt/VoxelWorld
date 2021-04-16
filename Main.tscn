@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://Scripts/chunk.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/voxel_world.gd" type="Script" id=1]
 [ext_resource path="res://scripts/free_move_camera.gd" type="Script" id=2]
 [ext_resource path="res://Textures/blockatlas.jpg" type="Texture" id=3]
 
@@ -8,8 +8,8 @@
 
 [node name="World" type="Spatial" parent="."]
 script = ExtResource( 1 )
-cubeMaterial = ExtResource( 3 )
+_texture_atlas = ExtResource( 3 )
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.35411 )
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 10, 10 )
 script = ExtResource( 2 )

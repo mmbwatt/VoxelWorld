@@ -1,9 +1,11 @@
-extends Spatial
+extends Node
 
 class_name Block
 
-var blockType
+var block_type
+var is_solid : bool
 var position : Vector3
+var parent_chunk
 export var _texture_image : Texture
 
 var blockUVs = {
@@ -17,14 +19,17 @@ var blockUVs = {
 							Vector2(0.0, 0.9375), Vector2(0.00625, 0.9375)]
 }
 
-func _init(block, setPosition:Vector3, image:Texture):
-	blockType = block
+func _init(setBlockType, setPosition:Vector3, setParent, setImage:Texture):
+	block_type = setBlockType
 	position = setPosition
-	_texture_image = image
-	
+	parent_chunk = setParent
+	_texture_image = setImage
+	if block_type == Enums.BlockType.AIR:
+		is_solid = false
+	else:
+		is_solid = true
 	
 func CreateQuad(side) -> void:
-	var mi = MeshInstance.new()
 	var arr = []
 	arr.resize(Mesh.ARRAY_MAX)
 	
@@ -41,9 +46,9 @@ func CreateQuad(side) -> void:
 	var uv11 : Vector2
 	
 	var uvArray
-	if blockType == Enums.BlockType.GRASS and side == Enums.Cubeside.TOP:
+	if block_type == Enums.BlockType.GRASS and side == Enums.Cubeside.TOP:
 		uvArray = blockUVs[Enums.Cubeside.TOP].value
-	elif blockType == Enums.BlockType.GRASS and side == Enums.Cubeside.BOTTOM:
+	elif block_type == Enums.BlockType.GRASS and side == Enums.Cubeside.BOTTOM:
 		uvArray = blockUVs[Enums.BlockType.DIRT]
 	else:
 		uvArray = blockUVs[Enums.BlockType.DIRT]
@@ -105,20 +110,39 @@ func CreateQuad(side) -> void:
 	var mesh = ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr)
 	
-	var material_one = SpatialMaterial.new()
-	material_one.albedo_texture = _texture_image
-	
+	var mi = MeshInstance.new()
 	mi.mesh = mesh
-	mi.set_surface_material(0, material_one)
-	
 	add_child(mi)
 
 
+func HasSolidNeighbour(x:int, y:int, z:int) -> bool:
+	var chunks = parent_chunk.chunk_data
+	if x < chunks.size() and x >= 0:
+		if y < chunks[x].size() and y >= 0:
+			if z < chunks[x][y].size() and z >= 0:
+				return chunks[x][y][z].IsSolid()
+				
+	return false
+
+
 func Draw() -> void:
-	CreateQuad(Enums.Cubeside.FRONT)
-	CreateQuad(Enums.Cubeside.BACK)
-	CreateQuad(Enums.Cubeside.TOP)
-	CreateQuad(Enums.Cubeside.BOTTOM)
-	CreateQuad(Enums.Cubeside.LEFT)
-	CreateQuad(Enums.Cubeside.RIGHT)
-	self.translate(position)
+	if block_type == Enums.BlockType.AIR:
+		return
+	
+	if not HasSolidNeighbour(position.x as int, position.y as int, (position.z + 1) as int):
+		CreateQuad(Enums.Cubeside.FRONT)
+	if not HasSolidNeighbour(position.x as int, position.y as int, (position.z - 1) as int):
+		CreateQuad(Enums.Cubeside.BACK)
+	if not HasSolidNeighbour(position.x as int, (position.y + 1) as int, position.z as int):
+		CreateQuad(Enums.Cubeside.TOP)
+	if not HasSolidNeighbour(position.x as int, (position.y - 1) as int, position.z as int):
+		CreateQuad(Enums.Cubeside.BOTTOM)
+	if not HasSolidNeighbour((position.x - 1) as int, position.y as int, position.z as int):
+		CreateQuad(Enums.Cubeside.LEFT)
+	if not HasSolidNeighbour((position.x + 1) as int, position.y as int, position.z as int):
+		CreateQuad(Enums.Cubeside.RIGHT)
+
+
+func IsSolid() -> bool:
+	return is_solid
+

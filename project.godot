@@ -9,13 +9,25 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Spatial",
+"base": "Node",
 "class": "Block",
 "language": "GDScript",
 "path": "res://Scripts/block.gd"
+}, {
+"base": "Spatial",
+"class": "Chunk",
+"language": "GDScript",
+"path": "res://Scripts/chunk.gd"
+}, {
+"base": "Spatial",
+"class": "VoxelWorld",
+"language": "GDScript",
+"path": "res://Scripts/voxel_world.gd"
 } ]
 _global_script_class_icons={
-"Block": ""
+"Block": "",
+"Chunk": "",
+"VoxelWorld": ""
 }
 
 [application]
@@ -27,6 +39,7 @@ config/icon="res://icon.png"
 [autoload]
 
 Enums="*res://scripts/enums.gd"
+Helper="*res://Scripts/helper.gd"
 
 [input]
 
