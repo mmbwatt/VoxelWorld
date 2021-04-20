@@ -2,10 +2,10 @@ extends Spatial
 
 class_name Chunk
 
-export var texture_image : Texture
+var texture_image : Texture
 var chunk_data = []
 var chunkSize : int
-var chunk_position
+#var chunk_position
 
 func _init(setPosition:Vector3, setTexture:Texture):
 	self.translation = setPosition
@@ -26,14 +26,8 @@ func buildChunk() -> void:
 			chunk_data[x][y].resize(chunkSize)
 			for z in chunkSize:
 				var pos := Vector3(x,y,z)
-				if rand_range(0, 100) <50:
-					var block = Block.new(Enums.BlockType.DIRT, pos, self, texture_image)
-					chunk_data[x][y][z] = block
-				else:
-					var block = Block.new(Enums.BlockType.AIR, pos, self, texture_image)
-					chunk_data[x][y][z] = block
-				
-				
+				var block = Block.new(Enums.BlockType.DIRT, pos, self, texture_image)
+				chunk_data[x][y][z] = block
 
 
 func DrawChunk() -> void:

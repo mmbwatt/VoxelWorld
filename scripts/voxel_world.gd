@@ -7,16 +7,19 @@ export(Texture) var _texture_atlas
 var chunk_dictionary = {}
 
 func _ready():
-	BuildChunkColumn()
+	Helper.voxel_world_instance = self
+	BuildWorld()
 
 
-func BuildChunkColumn() -> void:
-	for i in Helper.column_height:
-		var chunkPosition := Vector3(self.translation.x,\
-									 i * Helper.chunk_size,\
-									 self.translation.z)
-		var chunk = Chunk.new(chunkPosition, _texture_atlas);
-		chunk_dictionary[Helper.BuildChunkName(chunkPosition)] = chunk
+func BuildWorld() -> void:
+	for z in Helper.world_size:
+		for x in Helper.world_size:
+			for y in Helper.column_height:
+				var chunkPosition := Vector3(x * Helper.chunk_size,\
+											 y * Helper.chunk_size,\
+											 z * Helper.chunk_size)
+				var chunk = Chunk.new(chunkPosition, _texture_atlas);
+				chunk_dictionary[Helper.BuildChunkName(chunkPosition)] = chunk
 		
 	for chunk in chunk_dictionary:
 		var temp = chunk_dictionary.get(chunk) as Chunk

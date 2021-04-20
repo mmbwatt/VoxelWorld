@@ -38,7 +38,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Enums="*res://scripts/enums.gd"
+Enums="*res://Scripts/enums.gd"
 Helper="*res://Scripts/helper.gd"
 
 [input]
