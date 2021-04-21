@@ -8,16 +8,26 @@ var position : Vector3
 var parent_chunk
 var _texture_image : Texture
 
-var blockUVs = {
-	Enums.Cubeside.TOP: [Vector2(0.125, 0.375),Vector2(0.1875, 0.375),\
-						 Vector2(0.125,0.4375),Vector2(0.1875,0.4375)],
-	Enums.BlockType.GRASS: [Vector2(0.1875, 0.9375), Vector2(0.25, 0.9375),\
-							Vector2(0.1875, 1.0), Vector2 (0.25, 1.0)],
-	Enums.BlockType.DIRT: [Vector2(0.125, 0.0), Vector2(0.1875, 0.0),\
-							Vector2(0.125, 0.0625), Vector2(0.1875, 0.0625)],
-	Enums.BlockType.STONE: [Vector2(0.0, 0.875), Vector2(0.0625, 0.875),\
-							Vector2(0.0, 0.9375), Vector2(0.00625, 0.9375)]
-}
+var blockUVs := [
+	#Grass Top
+	[Vector2(0.1250, 0.5625),Vector2(0.1875, 0.5625), 
+	 Vector2(0.1250, 0.6250),Vector2(0.1875, 0.6250)],
+	#Grass Side
+	[Vector2(0.1875, 0.0000), Vector2(0.2500, 0.0000),
+	 Vector2(0.1875, 0.0625), Vector2(0.2500, 0.0625)],
+	#Dirt
+	[Vector2(0.1250, 0.0000), Vector2(0.1875, 0.0000),
+	 Vector2(0.1250, 0.0625), Vector2(0.1875, 0.0625)],
+	#Stone
+	[Vector2(0.0000, 0.0625), Vector2(0.0625, 0.0625),
+	 Vector2(0.0000, 0.1250), Vector2(0.0625, 0.1250)],
+	#Gold
+	[Vector2(0.0000, 0.1250), Vector2(0.0625, 0.1250),
+	 Vector2(0.0000, 0.1875), Vector2(0.0625, 0.1875)],
+	#Bedrock
+	[Vector2(0.3125, 0.1250), Vector2(0.3750, 0.1250),
+	 Vector2(0.3125, 0.1875), Vector2(0.3750, 0.1875)]
+]
 
 func _init(setBlockType, setPosition:Vector3, setParent, setImage:Texture):
 	block_type = setBlockType
@@ -46,14 +56,13 @@ func CreateQuad(side) -> void:
 	var uv11 : Vector2
 	
 	var uvArray
-	match block_type:
-		Enums.BlockType.GRASS:
-			if side == Enums.Cubeside.TOP:
-				uvArray = blockUVs[Enums.Cubeside.TOP]
-			elif side == Enums.Cubeside.BOTTOM:
-				uvArray = blockUVs[Enums.BlockType.DIRT]
-		_:
-			uvArray = blockUVs[Enums.BlockType.DIRT]
+	
+	if block_type == Enums.BlockType.GRASS and side == Enums.Cubeside.TOP:
+		uvArray = blockUVs[block_type]
+	elif block_type == Enums.BlockType.GRASS and side == Enums.Cubeside.BOTTOM:
+		uvArray = blockUVs[Enums.BlockType.DIRT + 1]
+	else:
+		uvArray = blockUVs[block_type + 1]
 	
 	#if not uvArray.empty():
 	uv00 = uvArray[0]

@@ -3,9 +3,9 @@ extends Spatial
 class_name Chunk
 
 var texture_image: Texture
-var chunk_data = []
+var chunk_data: Array
 var chunkSize: int
-#var chunk_position
+var chunk_status
 
 func _init(setPosition:Vector3, setTexture:Texture):
 	self.translation = setPosition
@@ -26,13 +26,33 @@ func BuildChunk() -> void:
 			chunk_data[x][y].resize(chunkSize)
 			for z in chunkSize:
 				var pos := Vector3(x,y,z)
-				var worldX:int = (x + translation.x) as int
-				var worldY:int = (y + translation.y) as int
-				var worldZ:int = (z + translation.z) as int
-				if worldY <= Helper.GenerateHeight(worldX, worldZ):
-					chunk_data[x][y][z] = Block.new(Enums.BlockType.DIRT, pos, self, texture_image)
-				else:
-					chunk_data[x][y][z] = Block.new(Enums.BlockType.AIR, pos, self, texture_image)
+				chunk_data[x][y][z] = CreateBlock(pos)
+	chunk_status = Enums.ChunkStatus.DRAW
+
+
+func CreateBlock(pos: Vector3) -> Block:
+	var worldX:int = (pos.x + translation.x) as int
+	var worldY:int = (pos.y + translation.y) as int
+	var worldZ:int = (pos.z + translation.z) as int
+	var newBlock: Block
+	
+	if worldY == 0:
+		newBlock = Block.new(Enums.BlockType.BEDROCK, pos, self, texture_image)
+	elif Helper.GetCaveProbability(worldX, worldY, worldZ) < 0.35:
+		newBlock = Block.new(Enums.BlockType.AIR, pos, self, texture_image)
+	elif worldY <= Helper.GenerateStoneHeight(worldX, worldZ):
+		if Helper.GetGoldProbability(worldX, worldY, worldZ) < 0.3:
+			newBlock = Block.new(Enums.BlockType.GOLD, pos, self, texture_image)
+		else:
+			newBlock = Block.new(Enums.BlockType.STONE, pos, self, texture_image)
+	elif worldY == Helper.GenerateDirtHeight(worldX, worldZ):
+		newBlock = Block.new(Enums.BlockType.GRASS, pos, self, texture_image)
+	elif worldY < Helper.GenerateDirtHeight(worldX, worldZ):
+		newBlock = Block.new(Enums.BlockType.DIRT, pos, self, texture_image)
+	else:
+		newBlock = Block.new(Enums.BlockType.AIR, pos, self, texture_image)
+	
+	return newBlock
 
 
 func DrawChunk() -> void:
