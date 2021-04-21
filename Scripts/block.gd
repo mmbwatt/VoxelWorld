@@ -48,8 +48,8 @@ func CreateQuad(side) -> void:
 	var uvArray
 	match block_type:
 		Enums.BlockType.GRASS:
-			if side == Enums.Cubeside.Top:
-				uvArray = blockUVs[Enums.Cubeside.TOP].value
+			if side == Enums.Cubeside.TOP:
+				uvArray = blockUVs[Enums.Cubeside.TOP]
 			elif side == Enums.Cubeside.BOTTOM:
 				uvArray = blockUVs[Enums.BlockType.DIRT]
 		_:
@@ -118,7 +118,9 @@ func CreateQuad(side) -> void:
 
 
 func HasSolidNeighbour(x:int, y:int, z:int) -> bool:
-	var chunks
+	var chunks = parent_chunk.GetChunkData()
+	var neighbour_name: String
+	var neighbour_chunk
 	
 	if x < 0 or x >= Helper.chunk_size or\
 	   y < 0 or y >= Helper.chunk_size or\
@@ -127,24 +129,22 @@ func HasSolidNeighbour(x:int, y:int, z:int) -> bool:
 										   (y - position.y as int) * Helper.chunk_size,\
 										   (z - position.z as int) * Helper.chunk_size)
 		neighbour_chunk_position += parent_chunk.translation
-		var neighbour_name : String = Helper.BuildChunkName(neighbour_chunk_position)
+		neighbour_name = Helper.BuildChunkName(neighbour_chunk_position)
 		
 		x = ConvertBlockIndexToLocal(x)
 		y = ConvertBlockIndexToLocal(y)
 		z = ConvertBlockIndexToLocal(z)
 		
-		var neighbour_chunk = Helper.TryGetChunk(neighbour_name)
+		neighbour_chunk = Helper.chunk_dictionary.get(neighbour_name)
 		if not neighbour_chunk == null:
-			chunks = neighbour_chunk.chunk_data
+			chunks = neighbour_chunk.GetChunkData()
 		else:
 			return false
-	else:
-		chunks = parent_chunk.chunk_data
 	
 	if chunks[x][y][z]:
 		return chunks[x][y][z].IsSolid()
 				
-	return true
+	return false
 
 
 func Draw() -> void:
@@ -153,15 +153,15 @@ func Draw() -> void:
 	
 	if not HasSolidNeighbour(position.x as int, position.y as int, (position.z + 1) as int):
 		CreateQuad(Enums.Cubeside.FRONT)
-	elif not HasSolidNeighbour(position.x as int, position.y as int, (position.z - 1) as int):
+	if not HasSolidNeighbour(position.x as int, position.y as int, (position.z - 1) as int):
 		CreateQuad(Enums.Cubeside.BACK)
 	if not HasSolidNeighbour(position.x as int, (position.y + 1) as int, position.z as int):
 		CreateQuad(Enums.Cubeside.TOP)
-	elif not HasSolidNeighbour(position.x as int, (position.y - 1) as int, position.z as int):
+	if not HasSolidNeighbour(position.x as int, (position.y - 1) as int, position.z as int):
 		CreateQuad(Enums.Cubeside.BOTTOM)
 	if not HasSolidNeighbour((position.x + 1) as int, position.y as int, position.z as int):
 		CreateQuad(Enums.Cubeside.RIGHT)
-	elif not HasSolidNeighbour((position.x - 1) as int, position.y as int, position.z as int):
+	if not HasSolidNeighbour((position.x - 1) as int, position.y as int, position.z as int):
 		CreateQuad(Enums.Cubeside.LEFT)
 
 
@@ -170,9 +170,15 @@ func IsSolid() -> bool:
 
 
 func ConvertBlockIndexToLocal(index:int) -> int:
-	var i : int
+	var i := index
 	if index == -1:
 		i = Helper.chunk_size - 1
 	elif index == Helper.chunk_size:
 		i = 0
 	return i
+
+
+func RemoveMeshes() -> void:
+	for child in get_children():
+		if child is MeshInstance:
+			child.queue_free()

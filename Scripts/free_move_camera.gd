@@ -15,6 +15,8 @@ var speed : float
 var mouseDelta : Vector2 = Vector2()
 
 func _ready():
+	var temp := (Helper.chunk_size * Helper.world_size) / 2
+	global_translate(Vector3(temp, Helper.max_height, -5))
 	resetInputValues()
 
 

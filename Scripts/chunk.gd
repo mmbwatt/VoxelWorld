@@ -2,9 +2,9 @@ extends Spatial
 
 class_name Chunk
 
-var texture_image : Texture
+var texture_image: Texture
 var chunk_data = []
-var chunkSize : int
+var chunkSize: int
 #var chunk_position
 
 func _init(setPosition:Vector3, setTexture:Texture):
@@ -12,10 +12,10 @@ func _init(setPosition:Vector3, setTexture:Texture):
 	self.name = Helper.BuildChunkName(setPosition)
 	texture_image = setTexture
 	chunkSize = Helper.chunk_size
-	buildChunk()
+	BuildChunk()
 
 
-func buildChunk() -> void:
+func BuildChunk() -> void:
 	#Create blocks
 	chunk_data.resize(chunkSize)
 	for x in chunkSize:
@@ -26,8 +26,13 @@ func buildChunk() -> void:
 			chunk_data[x][y].resize(chunkSize)
 			for z in chunkSize:
 				var pos := Vector3(x,y,z)
-				var block = Block.new(Enums.BlockType.DIRT, pos, self, texture_image)
-				chunk_data[x][y][z] = block
+				var worldX:int = (x + translation.x) as int
+				var worldY:int = (y + translation.y) as int
+				var worldZ:int = (z + translation.z) as int
+				if worldY <= Helper.GenerateHeight(worldX, worldZ):
+					chunk_data[x][y][z] = Block.new(Enums.BlockType.DIRT, pos, self, texture_image)
+				else:
+					chunk_data[x][y][z] = Block.new(Enums.BlockType.AIR, pos, self, texture_image)
 
 
 func DrawChunk() -> void:
@@ -45,12 +50,10 @@ func CombineQuads() -> void:
 	var temp_uvs = PoolVector2Array()
 	var temp_normals = PoolVector3Array()
 	var temp_indices = PoolIntArray()
-	
 	var temp_position : Vector3
 	
 	var counter : int = 0
-	var blocks_array = get_children()
-	for block in blocks_array:
+	for block in get_children():
 		if block is Block:
 			temp_position = block.position
 		var quads_array = block.get_children()
@@ -66,6 +69,9 @@ func CombineQuads() -> void:
 					temp_indices.append(index + counter)
 			counter += 4
 	
+	if temp_indices.empty():
+		return
+		
 	var mesh_array = []
 	mesh_array.resize(Mesh.ARRAY_MAX)
 	
@@ -91,4 +97,9 @@ func CombineQuads() -> void:
 
 func RemoveChildren() -> void:
 	for n in get_children():
-		n.queue_free()
+		if n is Block:
+			n.RemoveMeshes()
+
+
+func GetChunkData() -> Array:
+	return chunk_data.duplicate()
