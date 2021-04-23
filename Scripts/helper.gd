@@ -1,9 +1,7 @@
 extends Node
 
 const chunk_size := 10
-const column_height := 2
-const world_size := 2
-const draw_radius := 4
+const column_height := 5
 
 var max_height: int
 var dirt_noise: OpenSimplexNoise
@@ -11,8 +9,10 @@ var stone_noise: OpenSimplexNoise
 var cave_noise: OpenSimplexNoise
 var gold_noise: OpenSimplexNoise
 var chunk_dictionary: Dictionary
+var mutex: Mutex
 
 func _ready():
+	mutex = Mutex.new()
 	max_height = chunk_size * column_height
 	SetUpNoise()
 
@@ -67,3 +67,8 @@ func GetCaveProbability(x: float, y: float, z: float) -> float:
 func GetGoldProbability(x: float, y: float, z: float) -> float:
 	var weight = inverse_lerp(-1, 1, gold_noise.get_noise_3d(x, y, z))
 	return lerp (0, 1, weight)
+
+func AddToChunkDictionary(name: String, chunk):
+	mutex.lock()
+	chunk_dictionary[name] = chunk
+	mutex.unlock()
